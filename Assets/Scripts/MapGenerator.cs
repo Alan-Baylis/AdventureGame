@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MapGenerator : MonoBehaviour {
 	public enum DrawMode {NoiseMap, ColorMap, Mesh};
-	const int mapChunkSize = 241;
+	public const int mapChunkSize = 241;
 
 	public DrawMode drawMode;
 	public float noiseScale;
@@ -21,7 +21,19 @@ public class MapGenerator : MonoBehaviour {
 	[Range(0,6)]
 	public int levelOfDetail;
 
-	public void GenerateMap() {
+	public void DrawMapInEditor() {
+		MapData mapData = GenerateMapData();
+
+		MapDisplay display = FindObjectOfType<MapDisplay>();
+		if(drawMode == DrawMode.NoiseMap)
+			display.DrawTexture(textureGenerator.TextureFromHeightMap(mapData.heightMap));
+		else if(drawMode == DrawMode.Mesh)
+			display.DrawMesh(MeshGenerator.GenerateTerrainMesh(mapData.heightMap, meshHeightMultiplier, meshHeightCurve, levelOfDetail),textureGenerator.TextureFromColorMap(mapData.ColorMap, mapChunkSize, mapChunkSize));
+		else 
+			display.DrawTexture(textureGenerator.TextureFromColorMap(mapData.ColorMap, mapChunkSize, mapChunkSize));
+	}
+
+	 MapData GenerateMapData() {
 		float[,] noiseMap = Noise.GenerateNoiseMap(mapChunkSize,mapChunkSize,seed, noiseScale,octaves,peristance,lacunarity, offset);
 
 		Color[] colorMap = new Color[mapChunkSize * mapChunkSize];
@@ -36,13 +48,7 @@ public class MapGenerator : MonoBehaviour {
 				}
 			}
 		}
-		MapDisplay display = FindObjectOfType<MapDisplay>();
-		if(drawMode == DrawMode.NoiseMap)
-			display.DrawTexture(textureGenerator.TextureFromHeightMap(noiseMap));
-		else if(drawMode == DrawMode.Mesh)
-			display.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, meshHeightMultiplier, meshHeightCurve, levelOfDetail),textureGenerator.TextureFromColorMap(colorMap, mapChunkSize, mapChunkSize));
-		else 
-			display.DrawTexture(textureGenerator.TextureFromColorMap(colorMap, mapChunkSize, mapChunkSize));
+		return new MapData(noiseMap, colorMap);
 	}
 
 	void OnValidate() {
@@ -63,3 +69,15 @@ public struct TerrainType {
 	public string name;
 }
 
+
+public struct MapData{
+	public float[,] heightMap;
+	public Color[] ColorMap;
+
+	public MapData (float[,] heightMap, Color[] colorMap)
+	{
+		this.heightMap = heightMap;
+		this.ColorMap = colorMap;
+	}
+	
+}
