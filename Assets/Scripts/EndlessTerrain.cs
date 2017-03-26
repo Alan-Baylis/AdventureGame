@@ -20,7 +20,7 @@ public class EndlessTerrain : MonoBehaviour {
 
 	Dictionary<Vector2, TerrainChunk> terrainChunkDictionary = new Dictionary<Vector2, TerrainChunk>();
 
-	void Start() {
+	public void Start() {
 		maxViewDistance = detailLevels[detailLevels.Length -1].visibleDstThreshold;
 		mapGenerator = FindObjectOfType<MapGenerator>();
 		chunkSize = MapGenerator.mapChunkSize - 1;
@@ -69,6 +69,7 @@ public class EndlessTerrain : MonoBehaviour {
 		Bounds bounds;
 		MeshRenderer meshRenderer;
 		MeshFilter meshFilter;
+		MeshCollider meshCollider;
 		LODInfo[] detailLevels;
 		LODMesh[] lodMeshes;
 
@@ -85,6 +86,7 @@ public class EndlessTerrain : MonoBehaviour {
 			meshObject = new GameObject("Terrain Chunk");
 			meshRenderer = meshObject.AddComponent<MeshRenderer>();
 			meshFilter = meshObject.AddComponent<MeshFilter>();
+			meshCollider = meshObject.AddComponent<MeshCollider>();
 			meshObject.transform.position = positioV3 * scale;
 			meshObject.transform.localScale = Vector3.one * scale;
 			setVisible(false);
@@ -127,6 +129,7 @@ public class EndlessTerrain : MonoBehaviour {
 					if(lodMesh.hasMesh){
 						previousLODIndex = lodIndex;
 						meshFilter.mesh = lodMesh.mesh;
+						meshCollider.sharedMesh = lodMesh.mesh;
 					}
 					else if(!lodMesh.hasRequestedMesh){
 						lodMesh.RequestMesh(mapData);

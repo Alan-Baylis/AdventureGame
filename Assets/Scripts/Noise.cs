@@ -10,7 +10,6 @@ public static class Noise {
 		float maxPossibleHeight = 0;
 		float amplitude = 1;
 		float frequency = 1;
-
 		System.Random random = new System.Random (seed);
 		Vector2[] octaveOffsets = new Vector2[octaves];
 		for (int i = 0; i <octaves; i++) {	

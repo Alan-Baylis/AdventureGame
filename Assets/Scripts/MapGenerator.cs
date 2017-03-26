@@ -30,13 +30,16 @@ public class MapGenerator : MonoBehaviour {
 	public bool useFalloff;
 	float[,] fallOffMap;
 
+	void Start(){
+		DrawMapInEditor();
+	}
 	void Awake() {
 		fallOffMap = FallOffGenerator.GenerateFalloffMap(mapChunkSize);
 	}
 
 	public void DrawMapInEditor() {
 		MapData mapData = GenerateMapData(Vector2.zero);
-
+		seed = UnityEngine.Random.Range(1,300);
 		MapDisplay display = FindObjectOfType<MapDisplay>();
 		if(drawMode == DrawMode.NoiseMap)
 			display.DrawTexture(textureGenerator.TextureFromHeightMap(mapData.heightMap));
